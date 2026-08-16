@@ -1,0 +1,338 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String            @id @default(cuid())
+  email            String            @unique
+  name             String?
+  phone            String?
+  role             UserRole          @default(PARENT)
+  managedRegistrations Registration[] @relation("RegistrationManager")
+  legalAcceptances LegalAcceptance[]
+  checkIns         CheckIn[]         @relation("CheckInStaff")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+enum UserRole {
+  PARENT
+  TEAM_MANAGER
+  ORGANIZER
+  ADMIN
+}
+
+model Athlete {
+  id             String                      @id @default(cuid())
+  firstName      String
+  lastName       String
+  dob            DateTime
+  rosterEntries  RegistrationRosterEntry[]
+  createdAt      DateTime                    @default(now())
+  updatedAt      DateTime                    @updatedAt
+}
+
+model Club {
+  id        String   @id @default(cuid())
+  name      String
+  teams     Team[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Team {
+  id                 String         @id @default(cuid())
+  name               String
+  clubId             String?
+  club               Club?          @relation(fields: [clubId], references: [id])
+  registrations      Registration[]
+  homeGames          Game[]         @relation("HomeTeam")
+  awayGames          Game[]         @relation("AwayTeam")
+  standings          Standing[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+model Tournament {
+  id             String              @id @default(cuid())
+  slug           String              @unique
+  name           String
+  description    String?
+  status         TournamentStatus    @default(DRAFT)
+  startsAt       DateTime?
+  endsAt         DateTime?
+  sessions       EventSession[]
+  divisions      Division[]
+  registrations  Registration[]
+  venues         Venue[]
+  games          Game[]
+  standings      Standing[]
+  checkIns       CheckIn[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+enum TournamentStatus {
+  DRAFT
+  REGISTRATION_OPEN
+  REGISTRATION_CLOSED
+  SCHEDULED
+  LIVE
+  COMPLETED
+  CANCELLED
+}
+
+model EventSession {
+  id           String     @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  name         String
+  startsAt     DateTime
+  endsAt       DateTime?
+}
+
+model Division {
+  id              String         @id @default(cuid())
+  tournamentId    String
+  tournament      Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  name            String
+  minBirthDate    DateTime?
+  maxBirthDate    DateTime?
+  minRoster       Int            @default(5)
+  maxRoster       Int            @default(7)
+  registrations   Registration[]
+  games           Game[]
+  standings       Standing[]
+}
+
+model Registration {
+  id              String                    @id @default(cuid())
+  tournamentId    String
+  tournament      Tournament                @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  divisionId      String
+  division        Division                  @relation(fields: [divisionId], references: [id])
+  teamId          String?
+  team            Team?                     @relation(fields: [teamId], references: [id])
+  managerUserId   String?
+  manager         User?                     @relation("RegistrationManager", fields: [managerUserId], references: [id])
+  status          RegistrationStatus        @default(DRAFT)
+  baseAmountCents Int
+  discountCents   Int                       @default(0)
+  feeCents        Int                       @default(0)
+  totalCents      Int
+  rosterEntries   RegistrationRosterEntry[]
+  payments        Payment[]
+  checkIns        CheckIn[]
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+}
+
+enum RegistrationStatus {
+  DRAFT
+  PENDING_PAYMENT
+  PAID
+  WAIVER_INCOMPLETE
+  ELIGIBILITY_REVIEW
+  READY
+  CANCELLED
+  REFUNDED
+}
+
+model RegistrationRosterEntry {
+  id                String            @id @default(cuid())
+  registrationId    String
+  registration      Registration      @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  athleteId         String?
+  athlete           Athlete?          @relation(fields: [athleteId], references: [id])
+  firstName         String
+  lastName          String
+  dob               DateTime
+  guardianName      String?
+  guardianEmail     String?
+  waiverStatus      WaiverStatus      @default(MISSING)
+  eligibilityStatus EligibilityStatus @default(PENDING)
+  legalAcceptances  LegalAcceptance[]
+  checkIns          CheckIn[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}
+
+enum WaiverStatus {
+  MISSING
+  SIGNED
+}
+
+enum EligibilityStatus {
+  PENDING
+  ELIGIBLE
+  INELIGIBLE
+  OVERRIDDEN
+}
+
+model LegalDocument {
+  id          String              @id @default(cuid())
+  type        LegalDocumentType
+  version     String
+  title       String
+  body        String
+  active      Boolean             @default(true)
+  acceptances LegalAcceptance[]
+  createdAt   DateTime            @default(now())
+}
+
+enum LegalDocumentType {
+  WAIVER
+  REFUND_POLICY
+  TERMS
+}
+
+model LegalAcceptance {
+  id              String                    @id @default(cuid())
+  legalDocumentId String
+  legalDocument   LegalDocument             @relation(fields: [legalDocumentId], references: [id])
+  rosterEntryId   String?
+  rosterEntry     RegistrationRosterEntry?  @relation(fields: [rosterEntryId], references: [id])
+  userId          String?
+  user            User?                     @relation(fields: [userId], references: [id])
+  signerName      String
+  signerEmail     String?
+  acceptedAt      DateTime                  @default(now())
+  ipAddress       String?
+  userAgent       String?
+}
+
+model PromoCode {
+  id           String            @id @default(cuid())
+  code         String            @unique
+  discountType PromoDiscountType
+  amountCents  Int?
+  percentOff   Int?
+  maxUses      Int?
+  usedCount    Int               @default(0)
+  startsAt     DateTime?
+  expiresAt    DateTime?
+  active       Boolean           @default(true)
+}
+
+enum PromoDiscountType {
+  FREE_ENTRY
+  FIXED_AMOUNT
+  PERCENT
+}
+
+model Payment {
+  id                      String          @id @default(cuid())
+  registrationId          String
+  registration            Registration    @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  provider                PaymentProvider @default(STRIPE)
+  stripeCheckoutSessionId String?
+  stripePaymentIntentId   String?
+  amountCents             Int
+  status                  PaymentStatus   @default(PENDING)
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+}
+
+enum PaymentProvider {
+  STRIPE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  COMPED
+}
+
+model Venue {
+  id           String     @id @default(cuid())
+  tournamentId String?
+  tournament   Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  name         String
+  address      String?
+  latitude     Float?
+  longitude    Float?
+  fields       Field[]
+}
+
+model Field {
+  id      String @id @default(cuid())
+  venueId String
+  venue   Venue  @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  name    String
+  games   Game[]
+}
+
+model Game {
+  id           String     @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  divisionId   String
+  division     Division   @relation(fields: [divisionId], references: [id])
+  fieldId      String?
+  field        Field?     @relation(fields: [fieldId], references: [id])
+  homeTeamId   String?
+  homeTeam     Team?      @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeamId   String?
+  awayTeam     Team?      @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  startsAt     DateTime
+  status       GameStatus @default(SCHEDULED)
+  homeScore    Int?
+  awayScore    Int?
+  publishedAt  DateTime?
+  updatedAt    DateTime   @updatedAt
+}
+
+enum GameStatus {
+  SCHEDULED
+  IN_PROGRESS
+  FINAL
+  CANCELLED
+  FORFEIT
+}
+
+model Standing {
+  id           String     @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  divisionId   String
+  division     Division   @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  teamId       String
+  team         Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  played       Int        @default(0)
+  wins         Int        @default(0)
+  draws        Int        @default(0)
+  losses       Int        @default(0)
+  goalsFor     Int        @default(0)
+  goalsAgainst Int        @default(0)
+  goalDiff     Int        @default(0)
+  points       Int        @default(0)
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([divisionId, teamId])
+}
+
+model CheckIn {
+  id             String                    @id @default(cuid())
+  tournamentId   String
+  tournament     Tournament                @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  registrationId String?
+  registration   Registration?             @relation(fields: [registrationId], references: [id])
+  rosterEntryId  String?
+  rosterEntry    RegistrationRosterEntry?  @relation(fields: [rosterEntryId], references: [id])
+  checkedInById  String?
+  checkedInBy    User?                     @relation("CheckInStaff", fields: [checkedInById], references: [id])
+  checkedInAt    DateTime                  @default(now())
+  method         CheckInMethod             @default(QR)
+}
+
+enum CheckInMethod {
+  QR
+  MANUAL
+}
