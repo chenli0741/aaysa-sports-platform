@@ -4,15 +4,15 @@ import { getTournaments } from "@/lib/tournaments";
 
 export const dynamic = "force-dynamic";
 
-export default async function TournamentsPage() {
+export default async function OrganizerTournamentsPage() {
   const tournaments = await getTournaments();
 
   return (
     <main className="main">
       <section className="hero">
-        <div className="eyebrow">Public</div>
+        <div className="eyebrow">Organizer</div>
         <h1>Tournaments</h1>
-        <p className="lead">Browse active AAYSA Sports tournament operations.</p>
+        <p className="lead">Event setup and operating status.</p>
       </section>
 
       <section className="list-stack">
@@ -21,15 +21,10 @@ export default async function TournamentsPage() {
             <div>
               <span className="status-pill">{tournament.status.replaceAll("_", " ")}</span>
               <h2>{tournament.name}</h2>
-              <p>{tournament.description}</p>
-              <div className="summary-strip compact">
-                <span>{formatDateRange(tournament.startsAt, tournament.endsAt)}</span>
-                <span>{tournament.sessions.length} sessions</span>
-                <span>{tournament.divisions.length} divisions</span>
-              </div>
+              <p>{formatDateRange(tournament.startsAt, tournament.endsAt)}</p>
             </div>
-            <Link className="button secondary" href={`/tournaments/${tournament.slug}`}>
-              Open
+            <Link className="button secondary" href={`/organizer/tournaments/${tournament.id}`}>
+              Manage
             </Link>
           </article>
         ))}

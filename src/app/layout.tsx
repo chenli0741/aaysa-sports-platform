@@ -24,6 +24,7 @@ export default function RootLayout({
               <nav className="nav" aria-label="Main navigation">
                 <Link href="/tournaments">Tournaments</Link>
                 <Link href="/my-games">My Games</Link>
+                <Link href="/app/today">Today</Link>
                 <Link href="/organizer">Organizer</Link>
                 <Link href="/rules">Rules</Link>
               </nav>

@@ -1,6 +1,13 @@
 import Link from "next/link";
+import { formatDateRange } from "@/lib/format";
+import { getTournaments } from "@/lib/tournaments";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const tournaments = await getTournaments();
+  const activeTournament = tournaments[0];
+
   return (
     <main className="main">
       <section className="hero">
@@ -11,14 +18,29 @@ export default function HomePage() {
           rosters, waivers, schedules, check-in, score reporting, and standings.
         </p>
         <div className="actions">
-          <Link className="button" href="/tournaments">
-            View tournaments
+          <Link className="button" href={activeTournament ? `/tournaments/${activeTournament.slug}` : "/tournaments"}>
+            {activeTournament ? "Open active tournament" : "View tournaments"}
           </Link>
           <Link className="button secondary" href="/organizer">
             Organizer console
           </Link>
         </div>
       </section>
+
+      {activeTournament ? (
+        <section className="feature-band" aria-label="Active tournament">
+          <div>
+            <span className="step-label">Active event</span>
+            <h2>{activeTournament.name}</h2>
+            <p>{activeTournament.description}</p>
+          </div>
+          <div className="summary-strip">
+            <span>{formatDateRange(activeTournament.startsAt, activeTournament.endsAt)}</span>
+            <span>{activeTournament.divisions.length} divisions</span>
+            <span>{activeTournament.registrations.length} registrations</span>
+          </div>
+        </section>
+      ) : null}
 
       <section className="grid" aria-label="Platform areas">
         <article className="card">

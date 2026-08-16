@@ -8,16 +8,16 @@ datasource db {
 }
 
 model User {
-  id               String            @id @default(cuid())
-  email            String            @unique
-  name             String?
-  phone            String?
-  role             UserRole          @default(PARENT)
-  managedRegistrations Registration[] @relation("RegistrationManager")
-  legalAcceptances LegalAcceptance[]
-  checkIns         CheckIn[]         @relation("CheckInStaff")
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  id                   String            @id @default(cuid())
+  email                String            @unique
+  name                 String?
+  phone                String?
+  role                 UserRole          @default(PARENT)
+  managedRegistrations Registration[]    @relation("RegistrationManager")
+  legalAcceptances     LegalAcceptance[]
+  checkIns             CheckIn[]         @relation("CheckInStaff")
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
 }
 
 enum UserRole {
@@ -28,53 +28,55 @@ enum UserRole {
 }
 
 model Athlete {
-  id             String                      @id @default(cuid())
-  firstName      String
-  lastName       String
-  dob            DateTime
-  rosterEntries  RegistrationRosterEntry[]
-  createdAt      DateTime                    @default(now())
-  updatedAt      DateTime                    @updatedAt
+  id            String                    @id @default(cuid())
+  firstName     String
+  lastName      String
+  dob           DateTime
+  rosterEntries RegistrationRosterEntry[]
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
 }
 
 model Club {
   id        String   @id @default(cuid())
-  name      String
+  name      String   @unique
   teams     Team[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Team {
-  id                 String         @id @default(cuid())
-  name               String
-  clubId             String?
-  club               Club?          @relation(fields: [clubId], references: [id])
-  registrations      Registration[]
-  homeGames          Game[]         @relation("HomeTeam")
-  awayGames          Game[]         @relation("AwayTeam")
-  standings          Standing[]
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  id            String         @id @default(cuid())
+  name          String
+  clubId        String?
+  club          Club?          @relation(fields: [clubId], references: [id])
+  registrations Registration[]
+  homeGames     Game[]         @relation("HomeTeam")
+  awayGames     Game[]         @relation("AwayTeam")
+  standings     Standing[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Tournament {
-  id             String              @id @default(cuid())
-  slug           String              @unique
-  name           String
-  description    String?
-  status         TournamentStatus    @default(DRAFT)
-  startsAt       DateTime?
-  endsAt         DateTime?
-  sessions       EventSession[]
-  divisions      Division[]
-  registrations  Registration[]
-  venues         Venue[]
-  games          Game[]
-  standings      Standing[]
-  checkIns       CheckIn[]
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  id            String           @id @default(cuid())
+  slug          String           @unique
+  name          String
+  description   String?
+  status        TournamentStatus @default(DRAFT)
+  startsAt      DateTime?
+  endsAt        DateTime?
+  sessions      EventSession[]
+  divisions     Division[]
+  registrations Registration[]
+  venues        Venue[]
+  games         Game[]
+  standings     Standing[]
+  checkIns      CheckIn[]
+  promoCodes    PromoCode[]
+  notifications Notification[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 }
 
 enum TournamentStatus {
@@ -97,17 +99,18 @@ model EventSession {
 }
 
 model Division {
-  id              String         @id @default(cuid())
-  tournamentId    String
-  tournament      Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  name            String
-  minBirthDate    DateTime?
-  maxBirthDate    DateTime?
-  minRoster       Int            @default(5)
-  maxRoster       Int            @default(7)
-  registrations   Registration[]
-  games           Game[]
-  standings       Standing[]
+  id            String         @id @default(cuid())
+  tournamentId  String
+  tournament    Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  name          String
+  minBirthDate  DateTime?
+  maxBirthDate  DateTime?
+  minRoster     Int            @default(5)
+  maxRoster     Int            @default(7)
+  registrations Registration[]
+  games         Game[]
+  standings     Standing[]
+  promoCodes    PromoCode[]
 }
 
 model Registration {
@@ -175,14 +178,14 @@ enum EligibilityStatus {
 }
 
 model LegalDocument {
-  id          String              @id @default(cuid())
+  id          String            @id @default(cuid())
   type        LegalDocumentType
   version     String
   title       String
   body        String
-  active      Boolean             @default(true)
+  active      Boolean           @default(true)
   acceptances LegalAcceptance[]
-  createdAt   DateTime            @default(now())
+  createdAt   DateTime          @default(now())
 }
 
 enum LegalDocumentType {
@@ -192,22 +195,26 @@ enum LegalDocumentType {
 }
 
 model LegalAcceptance {
-  id              String                    @id @default(cuid())
+  id              String                   @id @default(cuid())
   legalDocumentId String
-  legalDocument   LegalDocument             @relation(fields: [legalDocumentId], references: [id])
+  legalDocument   LegalDocument            @relation(fields: [legalDocumentId], references: [id])
   rosterEntryId   String?
-  rosterEntry     RegistrationRosterEntry?  @relation(fields: [rosterEntryId], references: [id])
+  rosterEntry     RegistrationRosterEntry? @relation(fields: [rosterEntryId], references: [id])
   userId          String?
-  user            User?                     @relation(fields: [userId], references: [id])
+  user            User?                    @relation(fields: [userId], references: [id])
   signerName      String
   signerEmail     String?
-  acceptedAt      DateTime                  @default(now())
+  acceptedAt      DateTime                 @default(now())
   ipAddress       String?
   userAgent       String?
 }
 
 model PromoCode {
   id           String            @id @default(cuid())
+  tournamentId String?
+  tournament   Tournament?       @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  divisionId   String?
+  division     Division?         @relation(fields: [divisionId], references: [id], onDelete: Cascade)
   code         String            @unique
   discountType PromoDiscountType
   amountCents  Int?
@@ -251,7 +258,7 @@ enum PaymentStatus {
 }
 
 model Venue {
-  id           String     @id @default(cuid())
+  id           String      @id @default(cuid())
   tournamentId String?
   tournament   Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   name         String
@@ -319,20 +326,47 @@ model Standing {
 }
 
 model CheckIn {
-  id             String                    @id @default(cuid())
+  id             String                   @id @default(cuid())
   tournamentId   String
-  tournament     Tournament                @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournament     Tournament               @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   registrationId String?
-  registration   Registration?             @relation(fields: [registrationId], references: [id])
+  registration   Registration?            @relation(fields: [registrationId], references: [id])
   rosterEntryId  String?
-  rosterEntry    RegistrationRosterEntry?  @relation(fields: [rosterEntryId], references: [id])
+  rosterEntry    RegistrationRosterEntry? @relation(fields: [rosterEntryId], references: [id])
   checkedInById  String?
-  checkedInBy    User?                     @relation("CheckInStaff", fields: [checkedInById], references: [id])
-  checkedInAt    DateTime                  @default(now())
-  method         CheckInMethod             @default(QR)
+  checkedInBy    User?                    @relation("CheckInStaff", fields: [checkedInById], references: [id])
+  checkedInAt    DateTime                 @default(now())
+  method         CheckInMethod            @default(QR)
 }
 
 enum CheckInMethod {
   QR
   MANUAL
+}
+
+model Notification {
+  id           String              @id @default(cuid())
+  tournamentId String?
+  tournament   Tournament?         @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  type         NotificationType
+  channel      NotificationChannel @default(EMAIL)
+  subject      String
+  body         String
+  sentAt       DateTime?
+  createdAt    DateTime            @default(now())
+}
+
+enum NotificationType {
+  PAYMENT_CONFIRMATION
+  WAIVER_REMINDER
+  SCHEDULE_PUBLISHED
+  GAME_TIME_CHANGE
+  FIELD_CHANGE
+  SCORE_FINALIZED
+}
+
+enum NotificationChannel {
+  EMAIL
+  PUSH
+  SMS
 }

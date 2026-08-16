@@ -3,20 +3,20 @@ import { getTournaments } from "@/lib/tournaments";
 
 export const dynamic = "force-dynamic";
 
-export default async function MyGamesPage() {
+export default async function AppTodayPage() {
   const tournaments = await getTournaments();
 
   return (
     <main className="main">
       <section className="hero">
-        <div className="eyebrow">Account</div>
-        <h1>My Games</h1>
-        <p className="lead">Personalized schedules will filter by authenticated family or team after auth is connected.</p>
+        <div className="eyebrow">Mobile app</div>
+        <h1>Today</h1>
+        <p className="lead">Event-day app entry for games, venues, check-in, alerts, and sharing.</p>
       </section>
 
       <section className="list-stack">
-        {tournaments.map((tournament) =>
-          tournament.sessions.slice(0, 4).map((session) => (
+        {tournaments.flatMap((tournament) =>
+          tournament.sessions.map((session) => (
             <article className="row-card" key={session.id}>
               <div>
                 <span className="step-label">{tournament.name}</span>
