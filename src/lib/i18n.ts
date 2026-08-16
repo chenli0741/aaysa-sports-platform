@@ -66,11 +66,14 @@ export const dictionaries = {
       registrations: "registrations",
       areas: "Platform areas",
       registrationTitle: "Registration",
-      registrationBody: "Team manager flow for division selection, rosters, waivers, promo codes, and Stripe payment.",
+      registrationBody: "Register a team for the active event, choose a division, and submit the player roster.",
+      registrationAction: "Start registration",
+      scheduleTitle: "Schedule",
+      scheduleBody: "View published games, field assignments, opponents, and score status.",
+      scheduleAction: "View schedule",
       operationsTitle: "Event Operations",
-      operationsBody: "Organizer tools for registrations, schedule publishing, QR check-in, scores, and standings.",
-      mobileTitle: "Mobile Utility",
-      mobileBody: "Capacitor shell for app identity, stored sessions, push alerts, QR scanning, sharing, and deep links."
+      operationsBody: "Open organizer tools for registration review, check-in, scores, and standings.",
+      operationsAction: "Open organizer"
     },
     tournaments: {
       title: "Tournaments",
@@ -264,7 +267,16 @@ export const dictionaries = {
       COMPLETED: "Completed",
       FINAL: "Final",
       IN_PROGRESS: "In progress",
-      FORFEIT: "Forfeit"
+      FORFEIT: "Forfeit",
+      MISSING: "Missing",
+      SIGNED: "Signed",
+      PENDING: "Pending",
+      ELIGIBLE: "Eligible",
+      INELIGIBLE: "Ineligible",
+      OVERRIDDEN: "Overridden",
+      SUCCEEDED: "Succeeded",
+      FAILED: "Failed",
+      COMPED: "Comped"
     },
     fallbacks: {}
   },
@@ -311,11 +323,14 @@ export const dictionaries = {
       registrations: "个报名",
       areas: "平台模块",
       registrationTitle: "报名",
-      registrationBody: "队伍负责人可选择组别、提交名单、记录免责声明、使用优惠码并进入 Stripe 付款。",
+      registrationBody: "为当前赛事报名队伍，选择组别并提交球员名单。",
+      registrationAction: "开始报名",
+      scheduleTitle: "赛程",
+      scheduleBody: "查看已发布的比赛、场地分配、对阵和比分状态。",
+      scheduleAction: "查看赛程",
       operationsTitle: "赛事运营",
-      operationsBody: "组织者可管理报名、发布赛程、二维码签到、录入比分并生成排名。",
-      mobileTitle: "移动工具",
-      mobileBody: "Capacitor 原生壳支持 App 身份、会话保存、推送提醒、二维码扫描、分享和深度链接。"
+      operationsBody: "进入组织者工具，审核报名、签到、录入比分并查看排名。",
+      operationsAction: "打开组织者后台"
     },
     tournaments: {
       title: "赛事",
@@ -508,7 +523,16 @@ export const dictionaries = {
       COMPLETED: "已完成",
       FINAL: "完赛",
       IN_PROGRESS: "进行中",
-      FORFEIT: "弃权"
+      FORFEIT: "弃权",
+      MISSING: "缺失",
+      SIGNED: "已签署",
+      PENDING: "待处理",
+      ELIGIBLE: "符合资格",
+      INELIGIBLE: "不符合资格",
+      OVERRIDDEN: "人工通过",
+      SUCCEEDED: "已成功",
+      FAILED: "失败",
+      COMPED: "已减免"
     },
     fallbacks: {
       "Initial seed tournament for AAYSA Sports registration and operations development.":

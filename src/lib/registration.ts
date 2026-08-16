@@ -61,10 +61,14 @@ export function getRegistrationStatus(input: {
   return RegistrationStatus.READY;
 }
 
+export function hasSuccessfulPayment(payments: Pick<Payment, "status">[]) {
+  return payments.some((payment) => payment.status === "SUCCEEDED" || payment.status === "COMPED");
+}
+
 export function summarizePayment(payments: Pick<Payment, "status">[], locale: Locale = "en") {
   const labels = dictionaries[locale].paymentLabels;
 
-  if (payments.some((payment) => payment.status === "SUCCEEDED" || payment.status === "COMPED")) {
+  if (hasSuccessfulPayment(payments)) {
     return labels.paid;
   }
 

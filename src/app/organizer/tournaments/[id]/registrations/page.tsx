@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { RegistrationOperations } from "@/components/registration-operations";
 import { RegistrationTable } from "@/components/registration-table";
 import { getI18n } from "@/lib/i18n-server";
 import { getOrganizerTournament } from "@/lib/tournaments";
@@ -32,6 +33,8 @@ export default async function OrganizerRegistrationsPage({
         locale={locale}
         labels={{ ...dictionary.table, ...dictionary.common }}
       />
+
+      <RegistrationOperations registrations={tournament.registrations} locale={locale} />
     </main>
   );
 }

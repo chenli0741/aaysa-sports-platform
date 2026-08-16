@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { RegistrationTable } from "@/components/registration-table";
+import { CheckInPanel } from "@/components/check-in-panel";
 import { getI18n } from "@/lib/i18n-server";
 import { getOrganizerTournament } from "@/lib/tournaments";
 
@@ -27,11 +27,7 @@ export default async function CheckInPage({
         <p className="lead">{t.checkInLead}</p>
       </section>
 
-      <RegistrationTable
-        registrations={tournament.registrations}
-        locale={locale}
-        labels={{ ...dictionary.table, ...dictionary.common }}
-      />
+      <CheckInPanel registrations={tournament.registrations} locale={locale} />
     </main>
   );
 }

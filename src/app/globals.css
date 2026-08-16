@@ -358,6 +358,17 @@ select {
   font-weight: 700;
 }
 
+.small-button.secondary-action {
+  background: transparent;
+  color: var(--foreground);
+}
+
+.small-button.warning-action {
+  border-color: #8a5b00;
+  background: #fff8e8;
+  color: #8a5b00;
+}
+
 .submit-button {
   width: fit-content;
 }
@@ -429,6 +440,67 @@ tr:last-child td {
   color: var(--muted);
 }
 
+.operations-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+.operations-heading,
+.operation-panel,
+.mini-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.operations-heading h2,
+.operation-panel h3,
+.mini-list h3 {
+  margin: 6px 0 8px;
+}
+
+.operations-heading p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.operation-panel {
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+}
+
+.operation-panel > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.mini-list {
+  display: grid;
+  gap: 10px;
+}
+
+.mini-row {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.mini-row span {
+  display: grid;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.mini-row small {
+  color: var(--muted);
+  font-weight: 400;
+}
+
 @media (max-width: 760px) {
   .topbar-inner {
     align-items: flex-start;
@@ -452,7 +524,10 @@ tr:last-child td {
 
   .feature-band,
   .row-card,
-  .section-heading-row {
+  .section-heading-row,
+  .operations-heading,
+  .operation-panel,
+  .mini-row {
     align-items: stretch;
     flex-direction: column;
   }

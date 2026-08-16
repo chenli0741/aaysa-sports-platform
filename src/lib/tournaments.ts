@@ -39,7 +39,10 @@ export async function getTournamentBySlug(slug: string) {
         include: {
           team: { include: { club: true } },
           division: true,
-          rosterEntries: { orderBy: { createdAt: "asc" } },
+          rosterEntries: {
+            include: { checkIns: { orderBy: { checkedInAt: "desc" } } },
+            orderBy: { createdAt: "asc" }
+          },
           payments: { orderBy: { createdAt: "desc" } }
         },
         orderBy: { createdAt: "desc" }
@@ -68,8 +71,12 @@ export async function getOrganizerTournament(id: string) {
         include: {
           team: { include: { club: true } },
           division: true,
-          rosterEntries: true,
-          payments: true
+          rosterEntries: {
+            include: { checkIns: { orderBy: { checkedInAt: "desc" } } },
+            orderBy: { createdAt: "asc" }
+          },
+          payments: { orderBy: { createdAt: "desc" } },
+          checkIns: { orderBy: { checkedInAt: "desc" } }
         },
         orderBy: { createdAt: "desc" }
       },

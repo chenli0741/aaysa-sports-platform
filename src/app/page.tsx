@@ -47,14 +47,23 @@ export default async function HomePage() {
         <article className="card">
           <h2>{t.registrationTitle}</h2>
           <p>{t.registrationBody}</p>
+          <Link className="text-link" href={activeTournament ? `/tournaments/${activeTournament.slug}/register` : "/tournaments"}>
+            {t.registrationAction}
+          </Link>
+        </article>
+        <article className="card">
+          <h2>{t.scheduleTitle}</h2>
+          <p>{t.scheduleBody}</p>
+          <Link className="text-link" href={activeTournament ? `/tournaments/${activeTournament.slug}/schedule` : "/tournaments"}>
+            {t.scheduleAction}
+          </Link>
         </article>
         <article className="card">
           <h2>{t.operationsTitle}</h2>
           <p>{t.operationsBody}</p>
-        </article>
-        <article className="card">
-          <h2>{t.mobileTitle}</h2>
-          <p>{t.mobileBody}</p>
+          <Link className="text-link" href="/organizer">
+            {t.operationsAction}
+          </Link>
         </article>
       </section>
     </main>
