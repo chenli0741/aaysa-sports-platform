@@ -9,6 +9,7 @@ export default async function OrganizerPage() {
   const { dictionary } = await getI18n();
   const t = dictionary.organizer;
   const tournaments = await getTournaments();
+  const activeTournament = tournaments[0];
 
   return (
     <main className="main">
@@ -29,10 +30,30 @@ export default async function OrganizerPage() {
         <article className="card">
           <h2>{t.registrations}</h2>
           <p>{t.registrationsBody}</p>
+          <Link
+            className="text-link"
+            href={activeTournament ? `/organizer/tournaments/${activeTournament.id}/registrations` : "/organizer/tournaments"}
+          >
+            {t.reviewRegistrations}
+          </Link>
         </article>
         <article className="card">
           <h2>{t.eventDay}</h2>
           <p>{t.eventDayBody}</p>
+          <div className="card-link-row">
+            <Link href={activeTournament ? `/organizer/tournaments/${activeTournament.id}/schedule` : "/organizer/tournaments"}>
+              {t.manageSchedule}
+            </Link>
+            <Link href={activeTournament ? `/organizer/tournaments/${activeTournament.id}/check-in` : "/organizer/tournaments"}>
+              {t.openCheckIn}
+            </Link>
+            <Link href={activeTournament ? `/organizer/tournaments/${activeTournament.id}/scores` : "/organizer/tournaments"}>
+              {t.scores}
+            </Link>
+            <Link href={activeTournament ? `/organizer/tournaments/${activeTournament.id}/standings` : "/organizer/tournaments"}>
+              {t.standings}
+            </Link>
+          </div>
         </article>
       </section>
 
