@@ -1,24 +1,29 @@
-export default function RulesPage() {
+import { getI18n } from "@/lib/i18n-server";
+
+export default async function RulesPage() {
+  const { dictionary } = await getI18n();
+  const t = dictionary.rules;
+
   return (
     <main className="main">
       <section className="hero">
-        <div className="eyebrow">Public</div>
-        <h1>Rules</h1>
-        <p className="lead">Operational rules for AAYSA Sports tournament registration, eligibility, waivers, refunds, and standings.</p>
+        <div className="eyebrow">{dictionary.common.public}</div>
+        <h1>{t.title}</h1>
+        <p className="lead">{t.lead}</p>
       </section>
 
       <section className="grid">
         <article className="card">
-          <h2>Roster</h2>
-          <p>5v5 teams must submit 5 to 7 players. Teams outside that range require organizer review.</p>
+          <h2>{t.rosterTitle}</h2>
+          <p>{t.rosterBody}</p>
         </article>
         <article className="card">
-          <h2>Waivers</h2>
-          <p>Each player needs a guardian waiver acceptance tied to the active legal document version.</p>
+          <h2>{t.waiversTitle}</h2>
+          <p>{t.waiversBody}</p>
         </article>
         <article className="card">
-          <h2>Standings</h2>
-          <p>Default points are win 3, draw 1, loss 0. Sorting uses points, goal difference, goals for, then team name.</p>
+          <h2>{t.standingsTitle}</h2>
+          <p>{t.standingsBody}</p>
         </article>
       </section>
     </main>

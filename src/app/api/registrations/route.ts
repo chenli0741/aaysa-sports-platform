@@ -7,6 +7,8 @@ import {
   type Prisma
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { getRequestI18n } from "@/lib/i18n-request";
+import { interpolate } from "@/lib/i18n";
 import {
   PAYMENT_FEE_CENTS,
   RosterInput,
@@ -36,6 +38,8 @@ function requiredString(value: unknown) {
 }
 
 export async function POST(request: NextRequest) {
+  const { dictionary } = getRequestI18n(request);
+  const api = dictionary.apiErrors;
   const payload = (await request.json()) as RegistrationPayload;
 
   if (
@@ -45,7 +49,7 @@ export async function POST(request: NextRequest) {
     !requiredString(payload.teamName) ||
     !requiredString(payload.divisionId)
   ) {
-    return NextResponse.json({ error: "Missing required registration fields" }, { status: 400 });
+    return NextResponse.json({ error: api.missingRegistrationFields }, { status: 400 });
   }
 
   const roster = (payload.roster ?? []).filter(
@@ -58,18 +62,18 @@ export async function POST(request: NextRequest) {
   });
 
   if (!tournament) {
-    return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
+    return NextResponse.json({ error: api.tournamentNotFound }, { status: 404 });
   }
 
   const division = tournament.divisions.find((item) => item.id === payload.divisionId);
 
   if (!division) {
-    return NextResponse.json({ error: "Division not found" }, { status: 400 });
+    return NextResponse.json({ error: api.divisionNotFound }, { status: 400 });
   }
 
   if (roster.length < division.minRoster || roster.length > division.maxRoster) {
     return NextResponse.json(
-      { error: `Roster must include ${division.minRoster} to ${division.maxRoster} players` },
+      { error: interpolate(api.rosterSize, { min: division.minRoster, max: division.maxRoster }) },
       { status: 400 }
     );
   }

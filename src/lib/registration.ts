@@ -6,6 +6,7 @@ import {
   type Payment,
   type RegistrationRosterEntry
 } from "@prisma/client";
+import { dictionaries, type Locale } from "@/lib/i18n";
 
 export const TEAM_PRICE_CENTS = 38000;
 export const PAYMENT_FEE_CENTS = 1200;
@@ -60,26 +61,29 @@ export function getRegistrationStatus(input: {
   return RegistrationStatus.READY;
 }
 
-export function summarizePayment(payments: Pick<Payment, "status">[]) {
+export function summarizePayment(payments: Pick<Payment, "status">[], locale: Locale = "en") {
+  const labels = dictionaries[locale].paymentLabels;
+
   if (payments.some((payment) => payment.status === "SUCCEEDED" || payment.status === "COMPED")) {
-    return "Paid";
+    return labels.paid;
   }
 
   if (payments.some((payment) => payment.status === "REFUNDED")) {
-    return "Refunded";
+    return labels.refunded;
   }
 
   if (payments.some((payment) => payment.status === "FAILED")) {
-    return "Failed";
+    return labels.failed;
   }
 
-  return payments.length > 0 ? "Pending" : "Not started";
+  return payments.length > 0 ? labels.pending : labels.notStarted;
 }
 
 export function summarizeReadiness(input: {
   roster: Pick<RegistrationRosterEntry, "waiverStatus" | "eligibilityStatus">[];
   division: Pick<Division, "minRoster" | "maxRoster">;
   payments: Pick<Payment, "status">[];
+  locale?: Locale;
 }) {
   const rosterCount = input.roster.length;
   const signedWaivers = input.roster.filter((entry) => entry.waiverStatus === WaiverStatus.SIGNED).length;
@@ -88,13 +92,13 @@ export function summarizeReadiness(input: {
       entry.eligibilityStatus === EligibilityStatus.ELIGIBLE ||
       entry.eligibilityStatus === EligibilityStatus.OVERRIDDEN
   ).length;
-  const payment = summarizePayment(input.payments);
+  const payment = summarizePayment(input.payments, input.locale);
   const ready =
     rosterCount >= input.division.minRoster &&
     rosterCount <= input.division.maxRoster &&
     signedWaivers === rosterCount &&
     eligibleCount === rosterCount &&
-    payment === "Paid";
+    payment === dictionaries[input.locale ?? "en"].paymentLabels.paid;
 
   return {
     roster: `${rosterCount}/${input.division.maxRoster}`,

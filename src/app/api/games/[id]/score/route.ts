@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GameStatus, NotificationType } from "@prisma/client";
+import { getRequestI18n } from "@/lib/i18n-request";
 import { prisma } from "@/lib/prisma";
 
 function resultFor(homeScore: number, awayScore: number) {
@@ -18,13 +19,15 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { dictionary } = getRequestI18n(request);
+  const api = dictionary.apiErrors;
   const { id } = await params;
   const body = (await request.json()) as { homeScore?: number; awayScore?: number };
   const homeScore = Number(body.homeScore);
   const awayScore = Number(body.awayScore);
 
   if (!Number.isInteger(homeScore) || !Number.isInteger(awayScore) || homeScore < 0 || awayScore < 0) {
-    return NextResponse.json({ error: "Scores must be non-negative integers" }, { status: 400 });
+    return NextResponse.json({ error: api.invalidScores }, { status: 400 });
   }
 
   const game = await prisma.game.findUnique({
@@ -33,7 +36,7 @@ export async function POST(
   });
 
   if (!game || !game.homeTeamId || !game.awayTeamId) {
-    return NextResponse.json({ error: "Game not found or missing teams" }, { status: 404 });
+    return NextResponse.json({ error: api.gameNotFound }, { status: 404 });
   }
 
   await prisma.$transaction(async (tx) => {

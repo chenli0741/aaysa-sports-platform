@@ -1,12 +1,14 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
+const serverUrl = process.env.NEXT_PUBLIC_APP_URL;
+
 const config: CapacitorConfig = {
   appId: "org.aaysa.sports",
   appName: "AAYSA Sports",
-  webDir: "out",
+  webDir: "capacitor-web",
   server: {
-    url: process.env.NEXT_PUBLIC_APP_URL,
-    cleartext: process.env.NODE_ENV !== "production"
+    url: serverUrl,
+    cleartext: serverUrl?.startsWith("http://") ?? false
   }
 };
 

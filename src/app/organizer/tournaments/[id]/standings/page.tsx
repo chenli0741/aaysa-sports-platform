@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getI18n } from "@/lib/i18n-server";
 import { getOrganizerTournament } from "@/lib/tournaments";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +9,8 @@ export default async function OrganizerStandingsPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { dictionary } = await getI18n();
+  const t = dictionary.standings;
   const { id } = await params;
   const tournament = await getOrganizerTournament(id);
 
@@ -18,25 +21,25 @@ export default async function OrganizerStandingsPage({
   return (
     <main className="main wide">
       <section className="hero">
-        <div className="eyebrow">Organizer standings</div>
+        <div className="eyebrow">{t.organizerTitle}</div>
         <h1>{tournament.name}</h1>
-        <p className="lead">Current computed standings after final scores.</p>
+        <p className="lead">{t.organizerLead}</p>
       </section>
 
       <div className="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Team</th>
-              <th>Division</th>
-              <th>Played</th>
-              <th>W</th>
-              <th>D</th>
-              <th>L</th>
-              <th>GF</th>
-              <th>GA</th>
-              <th>GD</th>
-              <th>Pts</th>
+              <th>{t.team}</th>
+              <th>{t.division}</th>
+              <th>{t.played}</th>
+              <th>{t.wins}</th>
+              <th>{t.draws}</th>
+              <th>{t.losses}</th>
+              <th>{t.goalsFor}</th>
+              <th>{t.goalsAgainst}</th>
+              <th>{t.goalDiff}</th>
+              <th>{t.points}</th>
             </tr>
           </thead>
           <tbody>

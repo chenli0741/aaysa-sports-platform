@@ -1,34 +1,38 @@
 import Link from "next/link";
+import { interpolate } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { getTournaments } from "@/lib/tournaments";
 
 export const dynamic = "force-dynamic";
 
 export default async function OrganizerPage() {
+  const { dictionary } = await getI18n();
+  const t = dictionary.organizer;
   const tournaments = await getTournaments();
 
   return (
     <main className="main">
       <section className="hero">
-        <div className="eyebrow">Operations</div>
-        <h1>Organizer</h1>
-        <p className="lead">Registration readiness, schedule management, check-in, scores, and standings.</p>
+        <div className="eyebrow">{dictionary.home.operationsTitle}</div>
+        <h1>{t.title}</h1>
+        <p className="lead">{t.lead}</p>
       </section>
 
-      <section className="grid" aria-label="Organizer actions">
+      <section className="grid" aria-label={t.title}>
         <article className="card">
-          <h2>Tournaments</h2>
-          <p>Review event setup, sessions, venues, registrations, and operational status.</p>
+          <h2>{t.tournaments}</h2>
+          <p>{t.tournamentsBody}</p>
           <Link className="text-link" href="/organizer/tournaments">
-            View tournaments
+            {t.viewTournaments}
           </Link>
         </article>
         <article className="card">
-          <h2>Registrations</h2>
-          <p>Track roster counts, payment status, waiver completion, and eligibility readiness.</p>
+          <h2>{t.registrations}</h2>
+          <p>{t.registrationsBody}</p>
         </article>
         <article className="card">
-          <h2>Event day</h2>
-          <p>Publish schedules, check teams in, enter scores, and update standings.</p>
+          <h2>{t.eventDay}</h2>
+          <p>{t.eventDayBody}</p>
         </article>
       </section>
 
@@ -36,12 +40,12 @@ export default async function OrganizerPage() {
         {tournaments.map((tournament) => (
           <article className="row-card" key={tournament.id}>
             <div>
-              <span className="step-label">Current event</span>
+              <span className="step-label">{t.currentEvent}</span>
               <h2>{tournament.name}</h2>
-              <p>{tournament.registrations.length} registrations</p>
+              <p>{interpolate(t.registrationCount, { count: tournament.registrations.length })}</p>
             </div>
             <Link className="button secondary" href={`/organizer/tournaments/${tournament.id}`}>
-              Manage
+              {dictionary.common.manage}
             </Link>
           </article>
         ))}

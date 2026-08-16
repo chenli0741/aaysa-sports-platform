@@ -63,6 +63,33 @@ a {
   font-size: 14px;
 }
 
+.language-switcher {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  background: #f7f8fa;
+}
+
+.language-switcher button {
+  min-height: 32px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  padding: 0 10px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.language-switcher button:last-child {
+  border-right: 0;
+}
+
+.language-switcher button.active {
+  background: var(--foreground);
+  color: var(--surface);
+}
+
 .main {
   width: 100%;
   max-width: 1120px;

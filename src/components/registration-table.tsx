@@ -1,4 +1,5 @@
 import type { Division, Payment, RegistrationRosterEntry } from "@prisma/client";
+import { labelStatus, type Locale } from "@/lib/i18n";
 import { summarizeReadiness } from "@/lib/registration";
 
 type RegistrationRow = {
@@ -10,9 +11,29 @@ type RegistrationRow = {
   payments: Payment[];
 };
 
-export function RegistrationTable({ registrations }: { registrations: RegistrationRow[] }) {
+export function RegistrationTable({
+  registrations,
+  locale,
+  labels
+}: {
+  registrations: RegistrationRow[];
+  locale: Locale;
+  labels: {
+    noRegistrations: string;
+    team: string;
+    division: string;
+    roster: string;
+    payment: string;
+    waivers: string;
+    eligibility: string;
+    status: string;
+    ready: string;
+    unassignedTeam: string;
+    independent: string;
+  };
+}) {
   if (registrations.length === 0) {
-    return <p className="empty-state">No registrations yet.</p>;
+    return <p className="empty-state">{labels.noRegistrations}</p>;
   }
 
   return (
@@ -20,13 +41,13 @@ export function RegistrationTable({ registrations }: { registrations: Registrati
       <table>
         <thead>
           <tr>
-            <th>Team</th>
-            <th>Division</th>
-            <th>Roster</th>
-            <th>Payment</th>
-            <th>Waivers</th>
-            <th>Eligibility</th>
-            <th>Status</th>
+            <th>{labels.team}</th>
+            <th>{labels.division}</th>
+            <th>{labels.roster}</th>
+            <th>{labels.payment}</th>
+            <th>{labels.waivers}</th>
+            <th>{labels.eligibility}</th>
+            <th>{labels.status}</th>
           </tr>
         </thead>
         <tbody>
@@ -34,14 +55,15 @@ export function RegistrationTable({ registrations }: { registrations: Registrati
             const summary = summarizeReadiness({
               roster: registration.rosterEntries,
               division: registration.division,
-              payments: registration.payments
+              payments: registration.payments,
+              locale
             });
 
             return (
               <tr key={registration.id}>
                 <td>
-                  <strong>{registration.team?.name ?? "Unassigned team"}</strong>
-                  <span>{registration.team?.club?.name ?? "Independent"}</span>
+                  <strong>{registration.team?.name ?? labels.unassignedTeam}</strong>
+                  <span>{registration.team?.club?.name ?? labels.independent}</span>
                 </td>
                 <td>{registration.division.name}</td>
                 <td>{summary.roster}</td>
@@ -50,7 +72,7 @@ export function RegistrationTable({ registrations }: { registrations: Registrati
                 <td>{summary.eligibility}</td>
                 <td>
                   <span className={`status-pill ${summary.ready ? "ready" : "not-ready"}`}>
-                    {summary.ready ? "READY" : registration.status.replaceAll("_", " ")}
+                    {summary.ready ? labels.ready : labelStatus(registration.status, locale)}
                   </span>
                 </td>
               </tr>

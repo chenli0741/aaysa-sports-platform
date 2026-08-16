@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { getI18n } from "@/lib/i18n-server";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,13 +9,15 @@ export const metadata: Metadata = {
   description: "Tournament operations platform for AAYSA Sports."
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { locale, dictionary } = await getI18n();
+
   return (
-    <html lang="en">
+    <html lang={locale === "zh" ? "zh-CN" : "en"}>
       <body>
         <div className="shell">
           <header className="topbar">
@@ -21,13 +25,14 @@ export default function RootLayout({
               <Link className="brand" href="/">
                 AAYSA Sports
               </Link>
-              <nav className="nav" aria-label="Main navigation">
-                <Link href="/tournaments">Tournaments</Link>
-                <Link href="/my-games">My Games</Link>
-                <Link href="/app/today">Today</Link>
-                <Link href="/organizer">Organizer</Link>
-                <Link href="/rules">Rules</Link>
+              <nav className="nav" aria-label={dictionary.common.mainNavigation}>
+                <Link href="/tournaments">{dictionary.nav.tournaments}</Link>
+                <Link href="/my-games">{dictionary.nav.myGames}</Link>
+                <Link href="/app/today">{dictionary.nav.today}</Link>
+                <Link href="/organizer">{dictionary.nav.organizer}</Link>
+                <Link href="/rules">{dictionary.nav.rules}</Link>
               </nav>
+              <LanguageSwitcher locale={locale} />
             </div>
           </header>
           {children}

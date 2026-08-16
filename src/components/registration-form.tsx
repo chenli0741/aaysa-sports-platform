@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { formatMoney } from "@/lib/format";
+import { dictionaries, interpolate, labelStatus, type Locale } from "@/lib/i18n";
 import { PAYMENT_FEE_CENTS, TEAM_PRICE_CENTS } from "@/lib/registration";
 
 type DivisionOption = {
@@ -33,11 +34,14 @@ const emptyPlayer = (): RosterRow => ({
 
 export function RegistrationForm({
   tournamentSlug,
-  divisions
+  divisions,
+  locale
 }: {
   tournamentSlug: string;
   divisions: DivisionOption[];
+  locale: Locale;
 }) {
+  const t = dictionaries[locale].registrationForm;
   const [managerName, setManagerName] = useState("");
   const [managerEmail, setManagerEmail] = useState("");
   const [managerPhone, setManagerPhone] = useState("");
@@ -88,13 +92,17 @@ export function RegistrationForm({
 
     if (!response.ok || !result.data) {
       setStatus("error");
-      setMessage(result.error ?? "Registration could not be submitted.");
+      setMessage(result.error ?? t.submitError);
       return;
     }
 
     setStatus("submitted");
     setMessage(
-      `Registration ${result.data.id} created. Status: ${result.data.status}. Balance: ${formatMoney(result.data.totalCents)}.`
+      interpolate(t.submitSuccess, {
+        id: result.data.id,
+        status: labelStatus(result.data.status, locale),
+        balance: formatMoney(result.data.totalCents, locale)
+      })
     );
   }
 
@@ -102,20 +110,20 @@ export function RegistrationForm({
     <form className="form-stack" onSubmit={submitRegistration}>
       <section className="form-section">
         <div>
-          <span className="step-label">Step 1</span>
-          <h2>Team manager</h2>
+          <span className="step-label">{t.step1}</span>
+          <h2>{t.teamManager}</h2>
         </div>
         <div className="form-grid">
           <label>
-            Name
+            {t.name}
             <input value={managerName} onChange={(event) => setManagerName(event.target.value)} required />
           </label>
           <label>
-            Email
+            {t.email}
             <input type="email" value={managerEmail} onChange={(event) => setManagerEmail(event.target.value)} required />
           </label>
           <label>
-            Phone
+            {t.phone}
             <input value={managerPhone} onChange={(event) => setManagerPhone(event.target.value)} />
           </label>
         </div>
@@ -123,20 +131,20 @@ export function RegistrationForm({
 
       <section className="form-section">
         <div>
-          <span className="step-label">Step 2</span>
-          <h2>Team and division</h2>
+          <span className="step-label">{t.step2}</span>
+          <h2>{t.teamAndDivision}</h2>
         </div>
         <div className="form-grid">
           <label>
-            Team name
+            {t.teamName}
             <input value={teamName} onChange={(event) => setTeamName(event.target.value)} required />
           </label>
           <label>
-            Club or organization
+            {t.club}
             <input value={clubName} onChange={(event) => setClubName(event.target.value)} />
           </label>
           <label>
-            Division
+            {t.division}
             <select value={divisionId} onChange={(event) => setDivisionId(event.target.value)} required>
               {divisions.map((division) => (
                 <option key={division.id} value={division.id}>
@@ -148,9 +156,12 @@ export function RegistrationForm({
         </div>
         {selectedDivision ? (
           <p className="helper">
-            Roster {selectedDivision.minRoster}-{selectedDivision.maxRoster} players. DOB range{" "}
-            {selectedDivision.minBirthDate?.slice(0, 10) ?? "open"} to{" "}
-            {selectedDivision.maxBirthDate?.slice(0, 10) ?? "open"}.
+            {interpolate(t.rosterHint, {
+              min: selectedDivision.minRoster,
+              max: selectedDivision.maxRoster,
+              start: selectedDivision.minBirthDate?.slice(0, 10) ?? t.openDate,
+              end: selectedDivision.maxBirthDate?.slice(0, 10) ?? t.openDate
+            })}
           </p>
         ) : null}
       </section>
@@ -158,8 +169,8 @@ export function RegistrationForm({
       <section className="form-section">
         <div className="section-heading-row">
           <div>
-            <span className="step-label">Steps 3-4</span>
-            <h2>Roster and waivers</h2>
+            <span className="step-label">{t.steps34}</span>
+            <h2>{t.rosterWaivers}</h2>
           </div>
           <button
             className="small-button"
@@ -167,33 +178,33 @@ export function RegistrationForm({
             disabled={!selectedDivision || roster.length >= selectedDivision.maxRoster}
             onClick={() => setRoster((current) => [...current, emptyPlayer()])}
           >
-            Add player
+            {t.addPlayer}
           </button>
         </div>
 
         <div className="roster-stack">
           {roster.map((player, index) => (
             <fieldset className="player-row" key={index}>
-              <legend>Player {index + 1}</legend>
+              <legend>{interpolate(t.player, { index: index + 1 })}</legend>
               <div className="form-grid">
                 <label>
-                  First name
+                  {t.firstName}
                   <input value={player.firstName} onChange={(event) => updatePlayer(index, { firstName: event.target.value })} required />
                 </label>
                 <label>
-                  Last name
+                  {t.lastName}
                   <input value={player.lastName} onChange={(event) => updatePlayer(index, { lastName: event.target.value })} required />
                 </label>
                 <label>
-                  Date of birth
+                  {t.dob}
                   <input type="date" value={player.dob} onChange={(event) => updatePlayer(index, { dob: event.target.value })} required />
                 </label>
                 <label>
-                  Guardian name
+                  {t.guardianName}
                   <input value={player.guardianName} onChange={(event) => updatePlayer(index, { guardianName: event.target.value })} />
                 </label>
                 <label>
-                  Guardian email
+                  {t.guardianEmail}
                   <input type="email" value={player.guardianEmail} onChange={(event) => updatePlayer(index, { guardianEmail: event.target.value })} />
                 </label>
                 <label className="checkbox-label">
@@ -202,7 +213,7 @@ export function RegistrationForm({
                     checked={player.waiverAccepted}
                     onChange={(event) => updatePlayer(index, { waiverAccepted: event.target.checked })}
                   />
-                  Guardian waiver accepted
+                  {t.waiverAccepted}
                 </label>
               </div>
               {roster.length > (selectedDivision?.minRoster ?? 5) ? (
@@ -211,7 +222,7 @@ export function RegistrationForm({
                   type="button"
                   onClick={() => setRoster((current) => current.filter((_, playerIndex) => playerIndex !== index))}
                 >
-                  Remove player
+                  {t.removePlayer}
                 </button>
               ) : null}
             </fieldset>
@@ -221,16 +232,16 @@ export function RegistrationForm({
 
       <section className="form-section">
         <div>
-          <span className="step-label">Steps 5-6</span>
-          <h2>Review and payment</h2>
+          <span className="step-label">{t.steps56}</span>
+          <h2>{t.reviewPayment}</h2>
         </div>
         <div className="summary-strip">
-          <span>Team fee {formatMoney(TEAM_PRICE_CENTS)}</span>
-          <span>Processing fee {formatMoney(PAYMENT_FEE_CENTS)}</span>
-          <span>Stripe checkout pending integration</span>
+          <span>{interpolate(t.teamFee, { amount: formatMoney(TEAM_PRICE_CENTS, locale) })}</span>
+          <span>{interpolate(t.processingFee, { amount: formatMoney(PAYMENT_FEE_CENTS, locale) })}</span>
+          <span>{t.stripePending}</span>
         </div>
         <label>
-          Promo code
+          {t.promoCode}
           <input value={promoCode} onChange={(event) => setPromoCode(event.target.value.toUpperCase())} placeholder="AAYSA25" />
         </label>
       </section>
@@ -238,7 +249,7 @@ export function RegistrationForm({
       {message ? <p className={`notice ${status === "error" ? "error" : ""}`}>{message}</p> : null}
 
       <button className="button submit-button" type="submit" disabled={status === "submitting"}>
-        {status === "submitting" ? "Submitting..." : "Submit registration"}
+        {status === "submitting" ? t.submitting : t.submit}
       </button>
     </form>
   );

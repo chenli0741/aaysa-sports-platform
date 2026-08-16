@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getI18n } from "@/lib/i18n-server";
 import { getTournamentBySlug } from "@/lib/tournaments";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +9,8 @@ export default async function StandingsPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const { dictionary } = await getI18n();
+  const t = dictionary.standings;
   const { slug } = await params;
   const tournament = await getTournamentBySlug(slug);
 
@@ -18,25 +21,25 @@ export default async function StandingsPage({
   return (
     <main className="main wide">
       <section className="hero">
-        <div className="eyebrow">Standings</div>
+        <div className="eyebrow">{t.title}</div>
         <h1>{tournament.name}</h1>
-        <p className="lead">Win 3, draw 1, loss 0. Tie-breakers: points, goal difference, goals for, team name.</p>
+        <p className="lead">{t.lead}</p>
       </section>
 
       <div className="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Team</th>
-              <th>Division</th>
-              <th>Played</th>
-              <th>W</th>
-              <th>D</th>
-              <th>L</th>
-              <th>GF</th>
-              <th>GA</th>
-              <th>GD</th>
-              <th>Pts</th>
+              <th>{t.team}</th>
+              <th>{t.division}</th>
+              <th>{t.played}</th>
+              <th>{t.wins}</th>
+              <th>{t.draws}</th>
+              <th>{t.losses}</th>
+              <th>{t.goalsFor}</th>
+              <th>{t.goalsAgainst}</th>
+              <th>{t.goalDiff}</th>
+              <th>{t.points}</th>
             </tr>
           </thead>
           <tbody>

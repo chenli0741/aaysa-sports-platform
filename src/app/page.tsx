@@ -1,59 +1,60 @@
 import Link from "next/link";
 import { formatDateRange } from "@/lib/format";
+import { getI18n } from "@/lib/i18n-server";
+import { localizeFallback } from "@/lib/i18n";
 import { getTournaments } from "@/lib/tournaments";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  const { locale, dictionary } = await getI18n();
+  const t = dictionary.home;
   const tournaments = await getTournaments();
   const activeTournament = tournaments[0];
 
   return (
     <main className="main">
       <section className="hero">
-        <div className="eyebrow">Tournament platform</div>
+        <div className="eyebrow">{t.eyebrow}</div>
         <h1>AAYSA Sports</h1>
-        <p className="lead">
-          A web and mobile-supported operating system for tournament registration,
-          rosters, waivers, schedules, check-in, score reporting, and standings.
-        </p>
+        <p className="lead">{t.lead}</p>
         <div className="actions">
           <Link className="button" href={activeTournament ? `/tournaments/${activeTournament.slug}` : "/tournaments"}>
-            {activeTournament ? "Open active tournament" : "View tournaments"}
+            {activeTournament ? t.openActive : t.viewTournaments}
           </Link>
           <Link className="button secondary" href="/organizer">
-            Organizer console
+            {t.organizerConsole}
           </Link>
         </div>
       </section>
 
       {activeTournament ? (
-        <section className="feature-band" aria-label="Active tournament">
+        <section className="feature-band" aria-label={t.activeEvent}>
           <div>
-            <span className="step-label">Active event</span>
+            <span className="step-label">{t.activeEvent}</span>
             <h2>{activeTournament.name}</h2>
-            <p>{activeTournament.description}</p>
+            <p>{localizeFallback(activeTournament.description ?? "", locale)}</p>
           </div>
           <div className="summary-strip">
-            <span>{formatDateRange(activeTournament.startsAt, activeTournament.endsAt)}</span>
-            <span>{activeTournament.divisions.length} divisions</span>
-            <span>{activeTournament.registrations.length} registrations</span>
+            <span>{formatDateRange(activeTournament.startsAt, activeTournament.endsAt, locale)}</span>
+            <span>{activeTournament.divisions.length} {t.divisions}</span>
+            <span>{activeTournament.registrations.length} {t.registrations}</span>
           </div>
         </section>
       ) : null}
 
-      <section className="grid" aria-label="Platform areas">
+      <section className="grid" aria-label={t.areas}>
         <article className="card">
-          <h2>Registration</h2>
-          <p>Team manager flow for division selection, rosters, waivers, promo codes, and Stripe payment.</p>
+          <h2>{t.registrationTitle}</h2>
+          <p>{t.registrationBody}</p>
         </article>
         <article className="card">
-          <h2>Event Operations</h2>
-          <p>Organizer tools for registrations, schedule publishing, QR check-in, scores, and standings.</p>
+          <h2>{t.operationsTitle}</h2>
+          <p>{t.operationsBody}</p>
         </article>
         <article className="card">
-          <h2>Mobile Utility</h2>
-          <p>Capacitor shell for app identity, stored sessions, push alerts, QR scanning, sharing, and deep links.</p>
+          <h2>{t.mobileTitle}</h2>
+          <p>{t.mobileBody}</p>
         </article>
       </section>
     </main>

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { RegistrationForm } from "@/components/registration-form";
+import { getI18n } from "@/lib/i18n-server";
 import { getTournamentBySlug } from "@/lib/tournaments";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +10,8 @@ export default async function RegisterPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const { locale, dictionary } = await getI18n();
+  const t = dictionary.registrationPage;
   const { slug } = await params;
   const tournament = await getTournamentBySlug(slug);
 
@@ -19,13 +22,14 @@ export default async function RegisterPage({
   return (
     <main className="main wide">
       <section className="hero">
-        <div className="eyebrow">Registration</div>
+        <div className="eyebrow">{t.eyebrow}</div>
         <h1>{tournament.name}</h1>
-        <p className="lead">Submit team manager details, division, roster, guardian waiver status, promo code, and payment readiness.</p>
+        <p className="lead">{t.lead}</p>
       </section>
 
       <RegistrationForm
         tournamentSlug={tournament.slug}
+        locale={locale}
         divisions={tournament.divisions.map((division) => ({
           id: division.id,
           name: division.name,

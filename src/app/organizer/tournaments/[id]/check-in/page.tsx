@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { RegistrationTable } from "@/components/registration-table";
+import { getI18n } from "@/lib/i18n-server";
 import { getOrganizerTournament } from "@/lib/tournaments";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +10,8 @@ export default async function CheckInPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { locale, dictionary } = await getI18n();
+  const t = dictionary.organizer;
   const { id } = await params;
   const tournament = await getOrganizerTournament(id);
 
@@ -19,12 +22,16 @@ export default async function CheckInPage({
   return (
     <main className="main wide">
       <section className="hero">
-        <div className="eyebrow">Check-in</div>
+        <div className="eyebrow">{t.openCheckIn}</div>
         <h1>{tournament.name}</h1>
-        <p className="lead">QR and manual check-in will write to CheckIn records. First version exposes readiness before scanning.</p>
+        <p className="lead">{t.checkInLead}</p>
       </section>
 
-      <RegistrationTable registrations={tournament.registrations} />
+      <RegistrationTable
+        registrations={tournament.registrations}
+        locale={locale}
+        labels={{ ...dictionary.table, ...dictionary.common }}
+      />
     </main>
   );
 }

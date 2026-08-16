@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getRequestI18n } from "@/lib/i18n-request";
 import { getTournamentBySlug } from "@/lib/tournaments";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const { dictionary } = getRequestI18n(request);
   const { slug } = await params;
   const tournament = await getTournamentBySlug(slug);
 
   if (!tournament) {
-    return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
+    return NextResponse.json({ error: dictionary.apiErrors.tournamentNotFound }, { status: 404 });
   }
 
   return NextResponse.json({
