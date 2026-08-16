@@ -47,7 +47,8 @@ export const dictionaries = {
       independent: "Independent",
       unassignedTeam: "Unassigned team",
       final: "Final",
-      mainNavigation: "Main navigation"
+      mainNavigation: "Main navigation",
+      signIn: "Sign in"
     },
     notFound: {
       title: "Page not found",
@@ -305,7 +306,8 @@ export const dictionaries = {
       independent: "独立球队",
       unassignedTeam: "未分配球队",
       final: "完赛",
-      mainNavigation: "主导航"
+      mainNavigation: "主导航",
+      signIn: "登录"
     },
     notFound: {
       title: "页面不存在",

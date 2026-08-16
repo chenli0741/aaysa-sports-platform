@@ -141,8 +141,7 @@ export async function POST(request: NextRequest) {
       where: { email },
       update: {
         name: payload.managerName.trim(),
-        phone: payload.managerPhone?.trim() || null,
-        role: UserRole.TEAM_MANAGER
+        phone: payload.managerPhone?.trim() || null
       },
       create: {
         email,

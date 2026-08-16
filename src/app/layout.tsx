@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { authOptions } from "@/lib/auth";
 import { getI18n } from "@/lib/i18n-server";
 import "./globals.css";
 
@@ -15,6 +17,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { locale, dictionary } = await getI18n();
+  const session = await getServerSession(authOptions);
 
   return (
     <html lang={locale === "zh" ? "zh-CN" : "en"}>
@@ -31,6 +34,9 @@ export default async function RootLayout({
                 <Link href="/app/today">{dictionary.nav.today}</Link>
                 <Link href="/organizer">{dictionary.nav.organizer}</Link>
                 <Link href="/rules">{dictionary.nav.rules}</Link>
+                <Link href={session?.user ? "/account" : "/auth/sign-in"}>
+                  {session?.user ? dictionary.common.account : dictionary.common.signIn}
+                </Link>
               </nav>
               <LanguageSwitcher locale={locale} />
             </div>

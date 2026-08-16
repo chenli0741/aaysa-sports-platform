@@ -291,6 +291,15 @@ h1 {
   gap: 20px;
 }
 
+.auth-section {
+  margin-top: 40px;
+  max-width: 560px;
+}
+
+.compact-form {
+  margin-top: 0;
+}
+
 .section-heading-row {
   display: flex;
   justify-content: space-between;
