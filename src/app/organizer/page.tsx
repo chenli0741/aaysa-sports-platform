@@ -20,27 +20,27 @@ export default async function OrganizerPage() {
       </section>
 
       <section className="grid" aria-label={t.title}>
-        <article className="card">
+        <article className="card organizer-card">
           <h2>{t.tournaments}</h2>
           <p>{t.tournamentsBody}</p>
-          <Link className="text-link" href="/organizer/tournaments">
+          <Link className="button secondary card-button" href="/organizer/tournaments">
             {t.viewTournaments}
           </Link>
         </article>
-        <article className="card">
+        <article className="card organizer-card">
           <h2>{t.registrations}</h2>
           <p>{t.registrationsBody}</p>
           <Link
-            className="text-link"
+            className="button secondary card-button"
             href={activeTournament ? `/organizer/tournaments/${activeTournament.id}/registrations` : "/organizer/tournaments"}
           >
             {t.reviewRegistrations}
           </Link>
         </article>
-        <article className="card">
+        <article className="card organizer-card">
           <h2>{t.eventDay}</h2>
           <p>{t.eventDayBody}</p>
-          <div className="card-link-row">
+          <div className="card-action-grid">
             <Link href={activeTournament ? `/organizer/tournaments/${activeTournament.id}/schedule` : "/organizer/tournaments"}>
               {t.manageSchedule}
             </Link>
