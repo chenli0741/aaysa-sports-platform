@@ -1,0 +1,5 @@
+[
+  {"id":"7v7","name":"7v7","length":60,"width":45,"penaltyDepth":10,"penaltyWidth":26,"centerRadius":6,"penaltySpot":8,"buildOutLines":true},
+  {"id":"9v9","name":"9v9","length":80,"width":55,"penaltyDepth":13,"penaltyWidth":32,"goalDepth":5,"goalWidth":15,"centerRadius":7,"penaltySpot":9},
+  {"id":"11v11","name":"11v11","length":105,"width":68,"penaltyDepth":16.5,"penaltyWidth":40.32,"goalDepth":5.5,"goalWidth":18.32,"centerRadius":9.15,"penaltySpot":11}
+]
